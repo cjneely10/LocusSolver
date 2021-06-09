@@ -3,6 +3,7 @@ from typing import Sequence, Optional, Generator
 
 from BCBio import GFF
 from Bio import SeqIO
+from Bio.SeqRecord import SeqRecord
 
 from src.position_prob_matrix import PositionProbabilityMatrix
 
@@ -27,7 +28,7 @@ class Annotation(dict):
         self._intron_model = PositionProbabilityMatrix(front_size + end_size, self._intron_list(front_size, end_size))
 
     @property
-    def intron_model(self):
+    def intron_model(self) -> PositionProbabilityMatrix:
         return self._intron_model
 
     @staticmethod
@@ -38,7 +39,9 @@ class Annotation(dict):
 
     def _intron_list(self, front_size: int, end_size: int) -> Generator[str, None, None]:
         gff3_ptr = open(self._gff_file, "r")
+        record: SeqRecord
         for record in GFF.parse(gff3_ptr, base_dict=Annotation.genome_dict, limit_info=dict(gff_type=self._features)):
+            self[record.name] = record
             for feature in record.features:
                 sub_features = feature.sub_features
                 if len(sub_features) > 1:
