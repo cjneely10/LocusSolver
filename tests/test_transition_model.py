@@ -7,11 +7,15 @@ from src.models.transition_model import TransitionModel
 
 class TestTransitionModel(unittest.TestCase):
     def test_load(self):
-        model = AnnotationModel(
+        model1 = AnnotationModel(
             Path("data/GCA_000151265.1_Micromonas_pusilla_CCMP1545_v2.0_genomic.mask.Repeats.fna"),
             Path("data/GCA_000151265.1_Micromonas_pusilla_CCMP1545_v2.0_genomic.AbinitioGeneMark.gff3")
         )
-        t_model = TransitionModel(annotation_models=[model])
+        model2 = AnnotationModel(
+            Path("data/GCA_000151265.1_Micromonas_pusilla_CCMP1545_v2.0_genomic.mask.Repeats.fna"),
+            Path("data/GCA_000151265.1_Micromonas_pusilla_CCMP1545_v2.0_genomic.augustus.gff3")
+        )
+        t_model = TransitionModel(annotation_models=[model1, model2])
 
 
 if __name__ == '__main__':

@@ -22,7 +22,7 @@ class AnnotationModel(dict):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         if features is None:
-            features = ["transcript", "gene", "exon"]
+            features = ["transcript", "gene", "CDS"]
         self._gff_file = gff3_file
         self._features = features
         if AnnotationModel.genome_dict is None:
