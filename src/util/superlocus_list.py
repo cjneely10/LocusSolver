@@ -14,6 +14,8 @@ class SuperLocusList:
 
     @staticmethod
     def _sort(data: List[Tuple[str, Feature]]) -> List[SuperLocus]:
+        if len(data) == 0:
+            return []
         data.sort(key=lambda feature_tuple: feature_tuple[1].start)
         stack = [SuperLocus(data[0][1], data[0][0])]
         for (identifier, feature) in data[1:]:
