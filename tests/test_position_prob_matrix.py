@@ -1,6 +1,6 @@
 import unittest
 
-from src.position_prob_matrix import PPM
+from src.position_prob_matrix import PositionProbabilityMatrix
 
 
 class TestPPM(unittest.TestCase):
@@ -18,7 +18,7 @@ class TestPPM(unittest.TestCase):
     ]
 
     def test_matrix(self):
-        print(PPM(TestPPM.test_list).score("GAGGTAAAC"))
+        print(PositionProbabilityMatrix(TestPPM.test_list).score("GAGGTAAAC"))
 
 
 if __name__ == '__main__':
