@@ -1,6 +1,6 @@
 import unittest
 
-from src.position_prob_matrix import PositionProbabilityMatrix
+from src.models.position_prob_matrix import PositionProbabilityMatrix
 
 
 class TestPPM(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 
-from src.superlocus import Feature
-from src.superlocus_tree import SuperLocusList
+from src.util.feature import Feature
+from src.util.superlocus_list import SuperLocusList
 
 
 class TestSuperLocusList(unittest.TestCase):
@@ -14,9 +14,6 @@ class TestSuperLocusList(unittest.TestCase):
         ])
         for super_locus in slt.sorted:
             print(super_locus)
-
-    def test_sort(self):
-        self.fail()
 
 
 if __name__ == '__main__':
