@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Sequence, Optional, List, Generator
+from typing import Sequence, Optional, Generator
 
 from BCBio import GFF
 from Bio import SeqIO
