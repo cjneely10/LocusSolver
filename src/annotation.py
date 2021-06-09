@@ -1,20 +1,33 @@
 from pathlib import Path
-from typing import Sequence, Optional, List, Tuple
+from typing import Sequence, Optional, List
 
 from BCBio import GFF
 from Bio import SeqIO
+
+from src.position_prob_matrix import PositionProbabilityMatrix
 
 
 class Annotation(dict):
     genome_dict: dict = None
 
-    def __init__(self, genome_file: Path, gff3_file: Path, features: Optional[Sequence[str]] = None, *args, **kwargs):
+    def __init__(self,
+                 genome_file: Path,
+                 gff3_file: Path,
+                 features: Optional[Sequence[str]] = None,
+                 front_size: int = 10,
+                 end_size: int = 20,
+                 *args, **kwargs):
         if features is None:
             features = ["transcript", "exon"]
         if Annotation.genome_dict is None:
             Annotation.load_genome(genome_file)
         super().__init__(*args, **kwargs)
         self._load(gff3_file, features)
+        self._intron_model = PositionProbabilityMatrix(self.intron_list(front_size, end_size))
+
+    @property
+    def intron_model(self):
+        return self._intron_model
 
     @staticmethod
     def load_genome(genome_file: Path):
@@ -28,7 +41,7 @@ class Annotation(dict):
             self[record.name] = record
         gff3_ptr.close()
 
-    def intron_list(self, front_size: int = 10, end_size: int = 20) -> List[str]:
+    def intron_list(self, front_size: int, end_size: int) -> List[str]:
         out = []
         for key, val in self.items():
             for feature in val.features:
@@ -40,7 +53,7 @@ class Annotation(dict):
                     for index in intron_indices:
                         seq = val.seq[index[0] - 1: index[0] + front_size - 1] + \
                               val.seq[index[1] - end_size + 1: index[1] + 1]
-                        if len(seq) < 30:
+                        if len(seq) < front_size + end_size:
                             continue
                         if feature.strand == 1:
                             out.append(str(seq).upper())
