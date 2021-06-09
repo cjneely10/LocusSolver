@@ -22,3 +22,11 @@ class PPM:
     @property
     def ids(self) -> Dict[str, int]:
         return self._mapping
+
+    def score(self, query_string: str) -> float:
+        total = 1.0
+        for i, char in enumerate(query_string):
+            if i > self.matrix.shape[1]:
+                break
+            total *= self._matrix[self.ids[char], i]
+        return total

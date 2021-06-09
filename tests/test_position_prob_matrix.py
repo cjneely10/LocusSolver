@@ -18,7 +18,7 @@ class TestPPM(unittest.TestCase):
     ]
 
     def test_matrix(self):
-        print(PPM(TestPPM.test_list).matrix)
+        print(PPM(TestPPM.test_list).score("GAGGTAAAC"))
 
 
 if __name__ == '__main__':
