@@ -20,30 +20,28 @@ class LocusFilter:
             record.features = []
             for i, super_locus in enumerate(sll, start=1):
                 result = fxn(super_locus)
-                if result is None:
-                    continue
-                identifier, selected_features = result
-                for j, selected_feature in enumerate(selected_features, start=1):
+                for j, (identifier, selected_features) in enumerate(result, start=1):
                     qualifiers = {
                         "source": identifier,
                         "ID": f"gene{i}.{j}",
                     }
                     sub_qualifiers = {"source": identifier}
-                    top_feature = SeqFeature(
-                        FeatureLocation(selected_feature.start, selected_feature.end),
-                        type="gene",
-                        strand=selected_feature.strand,
-                        qualifiers=qualifiers
-                    )
-                    top_feature.sub_features = []
-                    for sub_feature in selected_feature.exons:
-                        top_feature.sub_features.append(
-                            SeqFeature(
-                                FeatureLocation(sub_feature.location.start, sub_feature.location.end),
-                                type=sub_feature.type,
-                                strand=sub_feature.strand,
-                                qualifiers=sub_qualifiers)
+                    for selected_feature in selected_features:
+                        top_feature = SeqFeature(
+                            FeatureLocation(selected_feature.start, selected_feature.end),
+                            type="gene",
+                            strand=selected_feature.strand,
+                            qualifiers=qualifiers
                         )
-                    record.features.append(top_feature)
+                        top_feature.sub_features = []
+                        for sub_feature in selected_feature.exons:
+                            top_feature.sub_features.append(
+                                SeqFeature(
+                                    FeatureLocation(sub_feature.location.start, sub_feature.location.end),
+                                    type=sub_feature.type,
+                                    strand=sub_feature.strand,
+                                    qualifiers=sub_qualifiers)
+                            )
+                        record.features.append(top_feature)
 
             yield record
