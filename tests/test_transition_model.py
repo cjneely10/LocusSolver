@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 
 from src.models.annotation_model import AnnotationModel
-from src.models.transition_model import TransitionModel
+from src.models.locus_filter import LocusFilter
 
 
 class TestTransitionModel(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestTransitionModel(unittest.TestCase):
             Path("data/GCA_000151265.1_Micromonas_pusilla_CCMP1545_v2.0_genomic.augustus.gff3"),
             "augustus"
         )
-        t_model = TransitionModel(annotation_models=[model1, model2])
+        locus_filter = LocusFilter(annotation_models=[model1, model2])
 
 
 if __name__ == '__main__':

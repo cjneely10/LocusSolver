@@ -46,7 +46,7 @@ class SuperLocus:
         return self.end < other.start
 
     def __str__(self):
-        return f"<SuperLocus start: {self.start} end: {self.end} features: {str(self._features)}>"
+        return f"<SuperLocus start: {self.start} end: {self.end} features: {str(self.features)}>"
 
     def __repr__(self):
         return str(self)

@@ -7,6 +7,7 @@ from Bio.SeqRecord import SeqRecord
 
 from src.models.position_prob_matrix import PositionProbabilityMatrix
 from src.util.feature import Feature
+from src.util.superlocus import SuperLocus
 from src.util.superlocus_list import SuperLocusList
 
 
@@ -28,7 +29,7 @@ class AnnotationModel(dict):
         self._features = features
         self._identifier = identifier
         if AnnotationModel.genome_dict is None:
-            AnnotationModel.load_genome(genome_file)
+            AnnotationModel._load_genome(genome_file)
         self._intron_model = PositionProbabilityMatrix(front_size + end_size, self._intron_list(front_size, end_size))
 
     @property
@@ -36,7 +37,7 @@ class AnnotationModel(dict):
         return self._intron_model
 
     @staticmethod
-    def load_genome(genome_file: Path):
+    def _load_genome(genome_file: Path):
         genome_ptr = open(genome_file, "r")
         AnnotationModel.genome_dict = SeqIO.to_dict(SeqIO.parse(genome_ptr, "fasta"))
         genome_ptr.close()
@@ -53,7 +54,7 @@ class AnnotationModel(dict):
         return out
 
     @staticmethod
-    def merge(models: List["AnnotationModel"]) -> Dict[str, List[Feature]]:
+    def merge(models: List["AnnotationModel"]) -> Dict[str, List[SuperLocus]]:
         feature_slls = {}
         for model in models:
             for (record_id, feature_list) in model._to_features():
