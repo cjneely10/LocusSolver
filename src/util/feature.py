@@ -23,8 +23,12 @@ class Feature:
     def strand(self):
         return self._strand
 
+    @property
+    def exons(self):
+        return self._exons
+
     def __str__(self):
-        return f"<Feature start: {self.start} end: {self.end} strand: {self.strand}>"
+        return f"<Feature start: {self.start} end: {self.end} strand: {self.strand} sub-features: {self.exons}>"
 
     def __repr__(self):
         return str(self)

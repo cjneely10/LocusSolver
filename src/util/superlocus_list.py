@@ -1,7 +1,7 @@
 from typing import List, Tuple
 
-from src.util.superlocus import SuperLocus
 from src.util.feature import Feature
+from src.util.superlocus import SuperLocus
 
 
 class SuperLocusList:

@@ -21,6 +21,10 @@ class SuperLocus:
     def end(self):
         return self._end
 
+    @property
+    def features(self):
+        return self._features
+
     def add_feature(self, feature: Feature, identifier: str):
         strand_dict = self._features[feature.strand]
         if identifier not in strand_dict.keys():
