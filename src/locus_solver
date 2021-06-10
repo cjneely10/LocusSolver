@@ -27,7 +27,7 @@ class LocusSolver(cli.Application):
 
     @cli.switch(["-i", "--input-gff3"], str, mandatory=True, list=True)
     def set_gff3_files(self, input_gff3s):
-        """Path to annotation GFF3 file"""
+        """Path to annotation GFF3 file. Provide in expected priority sort order"""
         for file in input_gff3s:
             file = Path(file).resolve()
             if not file.exists() or not file.is_file():
