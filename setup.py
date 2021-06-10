@@ -12,7 +12,7 @@ setup(
     python_requires='>=3.8',
     install_requires=[
         "bcbio-gff==0.6.6",
-        "biopython==1.79",
+        "biopython==1.76",
         "plumbum==1.7.0"
     ],
     scripts=[
