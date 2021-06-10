@@ -51,3 +51,23 @@ class PriorityFilter:
                     out.append((self._priority_mapping[i], features))
                     break
         return out
+
+
+class Tier(PriorityFilter):
+    def __init__(self, tier: int, priority_mapping: Dict[int, str]):
+        super().__init__(priority_mapping)
+        self._tier = tier
+
+    def __call__(self, super_locus: SuperLocus) -> FilterResult:
+        feature: Feature
+        out: FilterResult = []
+        for strand in (1, -1):
+            priority = {name: features for name, features in super_locus.features[strand].items()}
+            if len(priority) < self._tier:
+                continue
+            for i in range(1, len(self._priority_mapping) + 1):
+                features = priority.get(self._priority_mapping[i])
+                if features is not None:
+                    out.append((self._priority_mapping[i], features))
+                    break
+        return out

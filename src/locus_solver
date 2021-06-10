@@ -15,6 +15,7 @@ class LocusSolver(cli.Application):
     genome_file: Path
     gff3_files: List[Path] = []
     output_path: Path = Path("/dev/stdout")
+    tier: int = 1
 
     @cli.switch(["-g", "--genome"], str, mandatory=True)
     def set_genome_path(self, genome_path):
@@ -40,9 +41,17 @@ class LocusSolver(cli.Application):
         """Path to output merged results, default stdout"""
         self.output_path = output_path
 
+    @cli.switch(["-t", "--tier"], int)
+    def set_tier(self, tier):
+        """Set number of programs that must corroborate an input, default 1"""
+        self.tier = tier
+
     def main(self, *identifiers):
         if len(identifiers) != len(self.gff3_files):
             print("Pass identifiers for each gff3 file provided!")
+            exit(1)
+        if len(self.gff3_files) < self.tier:
+            print("Tier request surpasses input size, exiting")
             exit(1)
         annotation_models = []
         for identifier, gff3_file in zip(identifiers, self.gff3_files):
@@ -55,8 +64,10 @@ class LocusSolver(cli.Application):
             )
         locus_filter = LocusFilter(annotation_models=annotation_models)
         with open(self.output_path, "w") as merged_file:
-            GFF.write(locus_filter.filter(PriorityFilter({i: model for i, model in enumerate(identifiers, start=1)})),
-                      merged_file)
+            GFF.write(
+                locus_filter.filter(Tier(self.tier, {i: model for i, model in enumerate(identifiers, start=1)})),
+                merged_file
+            )
 
 
 if __name__ == "__main__":

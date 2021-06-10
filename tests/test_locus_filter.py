@@ -22,7 +22,7 @@ class TestLocusFilter(unittest.TestCase):
         )
         locus_filter = LocusFilter(annotation_models=[model1, model2])
         with open("data/sample.merged.gff3", "w") as merged_file:
-            GFF.write(locus_filter.filter(PriorityFilter({1: "genemark", 2: "augustus"})), merged_file)
+            GFF.write(locus_filter.filter(Tier(1, {1: "genemark", 2: "augustus"})), merged_file)
 
 
 if __name__ == '__main__':
