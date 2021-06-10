@@ -55,7 +55,8 @@ class LocusSolver(cli.Application):
             )
         locus_filter = LocusFilter(annotation_models=annotation_models)
         with open(self.output_path, "w") as merged_file:
-            GFF.write(locus_filter.filter(longest_cds), merged_file)
+            GFF.write(locus_filter.filter(PriorityFilter({i: model for i, model in enumerate(identifiers, start=1)})),
+                      merged_file)
 
 
 if __name__ == "__main__":

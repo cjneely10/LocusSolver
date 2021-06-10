@@ -8,7 +8,7 @@ from src.locus_filter import LocusFilter
 from src.util.annotation import Annotation
 
 
-class TestTransitionModel(unittest.TestCase):
+class TestLocusFilter(unittest.TestCase):
     def test_load(self):
         model1 = Annotation(
             Path("data/sample.fna"),
@@ -22,7 +22,7 @@ class TestTransitionModel(unittest.TestCase):
         )
         locus_filter = LocusFilter(annotation_models=[model1, model2])
         with open("data/sample.merged.gff3", "w") as merged_file:
-            GFF.write(locus_filter.filter(highest_scoring_intron_model), merged_file)
+            GFF.write(locus_filter.filter(PriorityFilter({1: "genemark", 2: "augustus"})), merged_file)
 
 
 if __name__ == '__main__':

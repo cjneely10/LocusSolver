@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import List, Dict
 
 import numpy as np
 
@@ -65,8 +65,19 @@ def highest_scoring_intron_model(contig_id: str, super_locus: SuperLocus) -> Fil
 
 
 class PriorityFilter:
-    def __init__(self, priority_mapping: Dict[str, int]):
+    def __init__(self, priority_mapping: Dict[int, str]):
         self._priority_mapping = priority_mapping
 
     def __call__(self, contig_id: str, super_locus: SuperLocus) -> FilterResult:
-        pass
+        feature: Feature
+        out: FilterResult = []
+        for strand in (1, -1):
+            priority = {name: None for name in self._priority_mapping.values()}
+            for name, features in super_locus.features[strand].items():
+                priority[name] = features
+            for i in range(1, len(self._priority_mapping) + 1):
+                features = priority[self._priority_mapping[i]]
+                if features is not None:
+                    out.append((self._priority_mapping[i], features))
+                    break
+        return out
