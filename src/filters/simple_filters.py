@@ -1,10 +1,9 @@
-from typing import List, Dict
+from typing import Dict
 
 import numpy as np
 
-from src.util.annotation import Annotation
-
 from src.filters import FilterResult
+from src.util.annotation import Annotation
 from src.util.feature import Feature
 from src.util.superlocus import SuperLocus
 

@@ -1,12 +1,10 @@
 from pathlib import Path
-from typing import Sequence, Optional, Generator, Tuple, List, Dict
+from typing import Sequence, Optional, Tuple, List, Dict
 
 from BCBio import GFF
 from Bio import SeqIO
-from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
-from src.models.position_prob_matrix import PositionProbabilityMatrix
 from src.util.feature import Feature
 from src.util.superlocus import SuperLocus
 from src.util.superlocus_list import SuperLocusList
@@ -14,9 +12,6 @@ from src.util.superlocus_list import SuperLocusList
 
 class Annotation(dict):
     genome_dict: dict = None
-    stored_models: Dict[str, "Annotation"] = {}
-    front_size: int = 10
-    end_size: int = 20
 
     def __init__(self,
                  genome_file: Path,
@@ -32,12 +27,7 @@ class Annotation(dict):
         self._identifier = identifier
         if Annotation.genome_dict is None:
             Annotation.load_genome(genome_file)
-        self._intron_model = PositionProbabilityMatrix(
-            Annotation.front_size + Annotation.end_size, self._intron_list(Annotation.front_size, Annotation.end_size))
-
-    @property
-    def intron_model(self) -> PositionProbabilityMatrix:
-        return self._intron_model
+        self._load()
 
     @staticmethod
     def load_genome(genome_file: Path):
@@ -60,7 +50,6 @@ class Annotation(dict):
     def merge(models: List["Annotation"]) -> Dict[str, List[SuperLocus]]:
         feature_slls = {}
         for model in models:
-            Annotation.stored_models[model._identifier] = model
             for (record_id, feature_list) in model._to_features():
                 if record_id not in feature_slls.keys():
                     feature_slls[record_id] = feature_list
@@ -70,7 +59,7 @@ class Annotation(dict):
             feature_slls[record_id] = SuperLocusList(feature_list).sorted
         return feature_slls
 
-    def _intron_list(self, front_size: int, end_size: int) -> Generator[str, None, None]:
+    def _load(self):
         gff3_ptr = open(self._gff_file, "r")
         record: SeqRecord
         for record in GFF.parse(gff3_ptr,
@@ -78,23 +67,5 @@ class Annotation(dict):
                                 limit_info=dict(gff_type=self._features)):
             self[record.name] = []
             for feature in record.features:
-                sub_features = feature.sub_features
                 self[record.name].append(feature)
-                if len(sub_features) > 1:
-                    intron_indices = []
-                    for i in range(len(sub_features) - 1):
-                        intron_indices.append((sub_features[i].location.end, sub_features[i + 1].location.start))
-                    for index in intron_indices:
-                        seq = Annotation.subset_seq(record, index)
-                        if len(seq) < front_size + end_size:
-                            continue
-                        if feature.strand == 1:
-                            yield str(seq).upper()
-                        else:
-                            yield str(seq.reverse_complement()).upper()
         gff3_ptr.close()
-
-    @staticmethod
-    def subset_seq(record: SeqRecord, index: Tuple[int, int]) -> Seq:
-        return record.seq[index[0] - 1: index[0] + Annotation.front_size - 1] + \
-              record.seq[index[1] - Annotation.end_size + 1: index[1] + 1]
