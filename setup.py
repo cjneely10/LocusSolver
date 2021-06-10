@@ -8,7 +8,7 @@ setup(
     author='Christopher Neely',
     author_email='christopher.neely1200@gmail.com',
     license='GNU GPL 3',
-    packages=[],
+    packages=['src'],
     python_requires='>=3.8',
     install_requires=[
         "bcbio-gff==0.6.6",
