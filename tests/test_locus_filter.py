@@ -3,7 +3,7 @@ from pathlib import Path
 
 from BCBio import GFF
 
-from src.filters.simple_filters import longest_cds
+from src.filters.simple_filters import *
 from src.locus_filter import LocusFilter
 from src.util.annotation import Annotation
 
@@ -22,7 +22,7 @@ class TestTransitionModel(unittest.TestCase):
         )
         locus_filter = LocusFilter(annotation_models=[model1, model2])
         with open("data/sample.merged.gff3", "w") as merged_file:
-            GFF.write(locus_filter.filter(longest_cds), merged_file)
+            GFF.write(locus_filter.filter(highest_scoring_intron_model), merged_file)
 
 
 if __name__ == '__main__':

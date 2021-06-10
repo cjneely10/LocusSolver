@@ -3,6 +3,7 @@ from typing import Sequence, Optional, Generator, Tuple, List, Dict
 
 from BCBio import GFF
 from Bio import SeqIO
+from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
 from src.models.position_prob_matrix import PositionProbabilityMatrix
@@ -14,14 +15,14 @@ from src.util.superlocus_list import SuperLocusList
 class Annotation(dict):
     genome_dict: dict = None
     stored_models: Dict[str, "Annotation"] = {}
+    front_size: int = 10
+    end_size: int = 20
 
     def __init__(self,
                  genome_file: Path,
                  gff3_file: Path,
                  identifier: str,
                  features: Optional[Sequence[str]] = None,
-                 front_size: int = 10,
-                 end_size: int = 20,
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         if features is None:
@@ -31,7 +32,8 @@ class Annotation(dict):
         self._identifier = identifier
         if Annotation.genome_dict is None:
             Annotation.load_genome(genome_file)
-        self._intron_model = PositionProbabilityMatrix(front_size + end_size, self._intron_list(front_size, end_size))
+        self._intron_model = PositionProbabilityMatrix(
+            Annotation.front_size + Annotation.end_size, self._intron_list(Annotation.front_size, Annotation.end_size))
 
     @property
     def intron_model(self) -> PositionProbabilityMatrix:
@@ -83,8 +85,7 @@ class Annotation(dict):
                     for i in range(len(sub_features) - 1):
                         intron_indices.append((sub_features[i].location.end, sub_features[i + 1].location.start))
                     for index in intron_indices:
-                        seq = record.seq[index[0] - 1: index[0] + front_size - 1] + \
-                              record.seq[index[1] - end_size + 1: index[1] + 1]
+                        seq = Annotation.subset_seq(record, index)
                         if len(seq) < front_size + end_size:
                             continue
                         if feature.strand == 1:
@@ -92,3 +93,8 @@ class Annotation(dict):
                         else:
                             yield str(seq.reverse_complement()).upper()
         gff3_ptr.close()
+
+    @staticmethod
+    def subset_seq(record: SeqRecord, index: Tuple[int, int]) -> Seq:
+        return record.seq[index[0] - 1: index[0] + Annotation.front_size - 1] + \
+              record.seq[index[1] - Annotation.end_size + 1: index[1] + 1]

@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import List, Dict, Callable, Generator
 
 from Bio.SeqFeature import SeqFeature, FeatureLocation
@@ -14,17 +13,18 @@ class LocusFilter:
         self._models = annotation_models
         self._feature_slls: Dict[str, List[SuperLocus]] = Annotation.merge(annotation_models)
 
-    def filter(self, fxn: Callable[[SuperLocus], FilterResult]) -> Generator[SeqRecord, None, None]:
-        for contig_id, sll in self._feature_slls.items():
-            record: SeqRecord = deepcopy(Annotation.genome_dict[contig_id])
+    def filter(self, fxn: Callable[[str, SuperLocus], FilterResult]) -> Generator[SeqRecord, None, None]:
+        for i, (contig_id, sll) in enumerate(self._feature_slls.items(), start=1):
+            record: SeqRecord = Annotation.genome_dict[contig_id]
             record.features = []
-            for i, super_locus in enumerate(sll, start=1):
-                result = fxn(super_locus)
-                for j, (identifier, selected_features) in enumerate(result, start=1):
-                    for selected_feature in selected_features:
+            for j, super_locus in enumerate(sll, start=1):
+                result = fxn(contig_id, super_locus)
+                for (identifier, selected_features) in result:
+                    for k, selected_feature in enumerate(selected_features, start=1):
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"gene{i}.{j}",
+                            "ID": f"gene{i}.{j}.{k}-{identifier}-{contig_id}"
+                                  f"-start:{selected_feature.start + 1}-end:{selected_feature.end}",
                         }
                         sub_qualifiers = {"source": identifier}
                         top_feature = SeqFeature(
