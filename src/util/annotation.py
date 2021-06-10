@@ -13,6 +13,7 @@ from src.util.superlocus_list import SuperLocusList
 
 class Annotation(dict):
     genome_dict: dict = None
+    stored_models: Dict[str, "Annotation"] = {}
 
     def __init__(self,
                  genome_file: Path,
@@ -57,6 +58,7 @@ class Annotation(dict):
     def merge(models: List["Annotation"]) -> Dict[str, List[SuperLocus]]:
         feature_slls = {}
         for model in models:
+            Annotation.stored_models[model._identifier] = model
             for (record_id, feature_list) in model._to_features():
                 if record_id not in feature_slls.keys():
                     feature_slls[record_id] = feature_list

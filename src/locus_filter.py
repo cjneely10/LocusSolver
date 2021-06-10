@@ -39,7 +39,7 @@ class LocusFilter:
                     for sub_feature in selected_feature.exons:
                         top_feature.sub_features.append(
                             SeqFeature(
-                                FeatureLocation(sub_feature.start, sub_feature.end),
+                                FeatureLocation(sub_feature.location.start, sub_feature.location.end),
                                 type=sub_feature.type,
                                 strand=sub_feature.strand,
                                 qualifiers=sub_qualifiers)
