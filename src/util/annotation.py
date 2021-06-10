@@ -11,7 +11,7 @@ from src.util.superlocus import SuperLocus
 from src.util.superlocus_list import SuperLocusList
 
 
-class AnnotationModel(dict):
+class Annotation(dict):
     genome_dict: dict = None
 
     def __init__(self,
@@ -28,8 +28,8 @@ class AnnotationModel(dict):
         self._gff_file = gff3_file
         self._features = features
         self._identifier = identifier
-        if AnnotationModel.genome_dict is None:
-            AnnotationModel._load_genome(genome_file)
+        if Annotation.genome_dict is None:
+            Annotation.load_genome(genome_file)
         self._intron_model = PositionProbabilityMatrix(front_size + end_size, self._intron_list(front_size, end_size))
 
     @property
@@ -37,9 +37,9 @@ class AnnotationModel(dict):
         return self._intron_model
 
     @staticmethod
-    def _load_genome(genome_file: Path):
+    def load_genome(genome_file: Path):
         genome_ptr = open(genome_file, "r")
-        AnnotationModel.genome_dict = SeqIO.to_dict(SeqIO.parse(genome_ptr, "fasta"))
+        Annotation.genome_dict = SeqIO.to_dict(SeqIO.parse(genome_ptr, "fasta"))
         genome_ptr.close()
 
     def _to_features(self) -> List[Tuple[str, List[Tuple[str, Feature]]]]:
@@ -54,7 +54,7 @@ class AnnotationModel(dict):
         return out
 
     @staticmethod
-    def merge(models: List["AnnotationModel"]) -> Dict[str, List[SuperLocus]]:
+    def merge(models: List["Annotation"]) -> Dict[str, List[SuperLocus]]:
         feature_slls = {}
         for model in models:
             for (record_id, feature_list) in model._to_features():
@@ -70,7 +70,7 @@ class AnnotationModel(dict):
         gff3_ptr = open(self._gff_file, "r")
         record: SeqRecord
         for record in GFF.parse(gff3_ptr,
-                                base_dict=AnnotationModel.genome_dict,
+                                base_dict=Annotation.genome_dict,
                                 limit_info=dict(gff_type=self._features)):
             self[record.name] = []
             for feature in record.features:
