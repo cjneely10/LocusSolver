@@ -1,0 +1,58 @@
+#!/usr/bin/env python
+from pathlib import Path
+from typing import List
+
+from BCBio import GFF
+from plumbum import cli
+
+from src.locus_filter import LocusFilter
+from src.util.annotation import Annotation
+
+
+class LocusSolver(cli.Application):
+    genome_file: Path
+    gff3_files: List[Path] = []
+    output_path: Path = Path("/dev/stdout")
+    filter_method: str = "longest_cds"
+
+    @cli.switch(["-g", "--genome"], str, mandatory=True)
+    def set_genome_path(self, genome_path):
+        genome_path = Path(genome_path).resolve()
+        if not genome_path.exists() or not genome_path.is_file():
+            print("Unable to find genome file")
+            exit(1)
+        self.genome_file = genome_path
+
+    @cli.switch(["-i", "--input-gff3"], str, mandatory=True, list=True)
+    def set_gff3_files(self, input_gff3s):
+        for file in input_gff3s:
+            file = Path(file).resolve()
+            if not file.exists() or not file.is_file():
+                print(f"Unable to find gff3 file {str(file)}")
+                exit(1)
+            self.gff3_files.append(file)
+
+    @cli.switch(["-o", "--output"], str)
+    def set_output_path(self, output_path):
+        self.output_path = output_path
+
+    def main(self, *args):
+        if len(args) != len(self.gff3_files):
+            print("Pass identifiers for each gff3 file provided!")
+            exit(1)
+        annotation_models = []
+        for identifier, gff3_file in zip(args, self.gff3_files):
+            annotation_models.append(
+                Annotation(
+                    self.genome_file,
+                    gff3_file,
+                    identifier
+                )
+            )
+        locus_filter = LocusFilter(annotation_models=annotation_models)
+        with open(self.output_path, "w") as merged_file:
+            GFF.write(locus_filter.filter(longest_cds), merged_file)
+
+
+if __name__ == "__main__":
+    LocusSolver.run()
