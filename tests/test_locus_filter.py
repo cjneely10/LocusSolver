@@ -4,7 +4,7 @@ from pathlib import Path
 from BCBio import GFF
 
 from src.filters.simple_filters import *
-from src.locus_filter import LocusFilter
+from src.util.locus_filter import LocusFilter
 from src.util.annotation import Annotation
 
 
