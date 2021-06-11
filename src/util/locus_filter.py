@@ -17,15 +17,16 @@ class LocusFilter:
         i = 1
         for (contig_id, sll) in self._feature_slls.items():
             record: SeqRecord = Annotation.genome_dict[contig_id]
-            record.features = []
             for super_locus in sll:
-                result = fxn(super_locus)
+                result: FilterResult = fxn(super_locus)
+                selected_features: List[SeqFeature]
                 for selected_features in result:
+                    selected_feature: SeqFeature
                     for selected_feature in selected_features:
                         identifier = selected_feature.qualifiers["source"]
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"gene{i}-{str(selected_feature.id)}"
+                            "ID": f"transcript{i}-{str(selected_feature.id)}"
                         }
                         top_feature = SeqFeature(
                             FeatureLocation(selected_feature.location.start, selected_feature.location.end),
@@ -38,12 +39,16 @@ class LocusFilter:
                             sub_qualifiers = {
                                 "source": selected_feature.qualifiers["source"],
                             }
+                            phase = sub_feature.qualifiers.get("phase")
+                            if phase is not None:
+                                sub_qualifiers["phase"] = phase
                             top_feature.sub_features.append(
                                 SeqFeature(
                                     sub_feature.location,
                                     type=sub_feature.type,
                                     strand=sub_feature.strand,
-                                    qualifiers=sub_qualifiers)
+                                    qualifiers=sub_qualifiers,
+                                )
                             )
                         record.features.append(top_feature)
                         i += 1

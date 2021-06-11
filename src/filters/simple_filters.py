@@ -14,7 +14,7 @@ def longest_cds(super_locus: SuperLocus) -> FilterResult:
         for name, features in super_locus.features[strand].items():
             total_cds_length = 0
             for feature in features:
-                for exon in feature.exons:
+                for exon in feature.sub_features:
                     total_cds_length += (exon.location.end - exon.location.start + 1)
             if total_cds_length > max_cds[0]:
                 max_cds = (total_cds_length, features)
