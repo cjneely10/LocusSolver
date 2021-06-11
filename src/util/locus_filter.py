@@ -20,24 +20,27 @@ class LocusFilter:
             record.features = []
             for super_locus in sll:
                 result = fxn(super_locus)
-                for (identifier, selected_features) in result:
+                for selected_features in result:
                     for selected_feature in selected_features:
+                        identifier = selected_feature.qualifiers["source"]
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"gene{i}-{identifier}-{str(selected_feature.id)}"
+                            "ID": f"gene{i}-{str(selected_feature.id)}"
                         }
-                        sub_qualifiers = {"source": identifier}
                         top_feature = SeqFeature(
-                            FeatureLocation(selected_feature.start, selected_feature.end),
-                            type="gene",
+                            FeatureLocation(selected_feature.location.start, selected_feature.location.end),
+                            type="transcript",
                             strand=selected_feature.strand,
                             qualifiers=qualifiers
                         )
                         top_feature.sub_features = []
-                        for sub_feature in selected_feature.exons:
+                        for sub_feature in selected_feature.sub_features:
+                            sub_qualifiers = {
+                                "source": selected_feature.qualifiers["source"],
+                            }
                             top_feature.sub_features.append(
                                 SeqFeature(
-                                    FeatureLocation(sub_feature.location.start, sub_feature.location.end),
+                                    sub_feature.location,
                                     type=sub_feature.type,
                                     strand=sub_feature.strand,
                                     qualifiers=sub_qualifiers)

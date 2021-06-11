@@ -1,11 +1,12 @@
 from typing import List, Tuple
 
-from src.util.feature import Feature
+from Bio.SeqFeature import SeqFeature
+
 from src.util.superlocus import SuperLocus
 
 
 class SuperLocusList:
-    def __init__(self, data: List[Tuple[str, Feature]]):
+    def __init__(self, data: List[Tuple[str, SeqFeature]]):
         self._data = self._sort(data)
 
     @property
@@ -13,10 +14,8 @@ class SuperLocusList:
         return self._data
 
     @staticmethod
-    def _sort(data: List[Tuple[str, Feature]]) -> List[SuperLocus]:
-        if len(data) == 0:
-            return []
-        data.sort(key=lambda feature_tuple: feature_tuple[1].start)
+    def _sort(data: List[Tuple[str, SeqFeature]]) -> List[SuperLocus]:
+        data.sort(key=lambda feature_tuple: feature_tuple[1].location.start)
         stack = [SuperLocus(data[0][1], data[0][0])]
         for (identifier, feature) in data[1:]:
             top = stack[-1]

@@ -4,10 +4,8 @@ from typing import Sequence, Optional, Tuple, List, Dict
 from BCBio import GFF
 from Bio import SeqIO
 from Bio.SeqFeature import SeqFeature
-
 from Bio.SeqRecord import SeqRecord
 
-from src.util.feature import Feature
 from src.util.superlocus import SuperLocus
 from src.util.superlocus_list import SuperLocusList
 
@@ -23,7 +21,7 @@ class Annotation(dict):
                  *args, **kwargs):
         super().__init__(*args, **kwargs)
         if features is None:
-            features = ["transcript", "gene", "CDS"]
+            features = ["transcript", "gene", "CDS", "exon"]
         self._gff_file = gff3_file
         self._features = features
         self._identifier = identifier
@@ -37,15 +35,13 @@ class Annotation(dict):
         Annotation.genome_dict = SeqIO.to_dict(SeqIO.parse(genome_ptr, "fasta"))
         genome_ptr.close()
 
-    def _to_features(self) -> List[Tuple[str, List[Tuple[str, Feature]]]]:
+    def _to_features(self) -> List[Tuple[str, List[Tuple[str, SeqFeature]]]]:
         out = []
-        gene_dict: List[SeqFeature]
-        for record_id, gene_dict in self.items():
+        gene_list: List[SeqFeature]
+        for record_id, gene_list in self.items():
             _add = []
-            for feature in gene_dict:
-                _add.append((self._identifier,
-                             Feature(feature.location.start, feature.location.end, feature.strand,
-                                     feature.qualifiers["ID"][0].replace(record_id, ""), feature.sub_features)))
+            for feature in gene_list:
+                _add.append((self._identifier, feature))
             out.append((record_id, _add))
         return out
 
@@ -67,8 +63,7 @@ class Annotation(dict):
         record: SeqRecord
         for record in GFF.parse(gff3_ptr,
                                 base_dict=Annotation.genome_dict,
-                                limit_info=dict(gff_type=self._features)):
-            self[record.name] = []
-            for feature in record.features:
-                self[record.name].append(feature)
+                                # limit_info=dict(gff_type=self._features)
+                                ):
+            self[record.name] = record.features
         gff3_ptr.close()

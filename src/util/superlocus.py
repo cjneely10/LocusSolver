@@ -1,15 +1,15 @@
 from sys import maxsize
 from typing import Dict, List, Optional
 
-from src.util.feature import Feature
+from Bio.SeqFeature import SeqFeature
 
 
 class SuperLocus:
-    def __init__(self, feature: Optional[Feature] = None, identifier: Optional[str] = None):
+    def __init__(self, feature: Optional[SeqFeature] = None, identifier: Optional[str] = None):
         self._start = maxsize
         self._end = -1 * maxsize
         # Store features by strand
-        self._features: Dict[int, Dict[str, List[Feature]]] = {1: {}, -1: {}}
+        self._features: Dict[int, Dict[str, List[SeqFeature]]] = {1: {}, -1: {}}
         if feature is not None and identifier is not None:
             self.add_feature(feature, identifier)
 
@@ -25,25 +25,24 @@ class SuperLocus:
     def features(self):
         return self._features
 
-    def add_feature(self, feature: Feature, identifier: str):
+    def add_feature(self, feature: SeqFeature, identifier: str):
         strand_dict = self._features[feature.strand]
         if identifier not in strand_dict.keys():
             strand_dict[identifier] = []
         strand_dict[identifier].append(feature)
-        strand_dict[identifier].sort(key=lambda feat: feat.start)
-        if feature.start < self._start:
-            self._start = feature.start
-        if feature.end > self._end:
-            self._end = feature.end
+        if feature.location.start < self._start:
+            self._start = feature.location.start
+        if feature.location.end > self._end:
+            self._end = feature.location.end
 
-    def overlaps(self, feature: Feature) -> bool:
-        return min(self.end, feature.end) > max(self.start, feature.start)
+    def overlaps(self, feature: SeqFeature) -> bool:
+        return min(self.end, feature.location.end) > max(self.start, feature.location.start)
 
-    def __gt__(self, other: Feature) -> bool:
-        return self.start > other.end
+    def __gt__(self, other: SeqFeature) -> bool:
+        return self.start > other.location.end
 
-    def __lt__(self, other: Feature) -> bool:
-        return self.end < other.start
+    def __lt__(self, other: SeqFeature) -> bool:
+        return self.end < other.location.start
 
     def __str__(self):
         return f"<SuperLocus start: {self.start} end: {self.end} " \

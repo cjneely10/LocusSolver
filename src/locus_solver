@@ -6,8 +6,8 @@ from BCBio import GFF
 from plumbum import cli
 
 from src.filters.simple_filters import *
-from src.util.locus_filter import LocusFilter
 from src.util.annotation import Annotation
+from src.util.locus_filter import LocusFilter
 
 
 class LocusSolver(cli.Application):

@@ -1,5 +1,5 @@
-from typing import Tuple, List
+from typing import List
 
-from src.util.feature import Feature
+from Bio.SeqFeature import SeqFeature
 
-FilterResult = List[Tuple[str, List[Feature]]]
+FilterResult = List[List[SeqFeature]]
