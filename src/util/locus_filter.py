@@ -14,17 +14,17 @@ class LocusFilter:
         self._feature_slls: Dict[str, List[SuperLocus]] = Annotation.merge(annotation_models)
 
     def filter(self, fxn: Callable[[SuperLocus], FilterResult]) -> Generator[SeqRecord, None, None]:
-        for i, (contig_id, sll) in enumerate(self._feature_slls.items(), start=1):
+        i = 1
+        for (contig_id, sll) in self._feature_slls.items():
             record: SeqRecord = Annotation.genome_dict[contig_id]
             record.features = []
-            for j, super_locus in enumerate(sll, start=1):
+            for super_locus in sll:
                 result = fxn(super_locus)
-                for l, (identifier, selected_features) in enumerate(result, start=1):
-                    for k, selected_feature in enumerate(selected_features, start=1):
+                for (identifier, selected_features) in result:
+                    for selected_feature in selected_features:
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"gene{i}.{j}.{l}.{k}-{identifier}-{contig_id}"
-                                  f"-{str(selected_feature.id)}",
+                            "ID": f"gene{i}-{identifier}-{str(selected_feature.id)}"
                         }
                         sub_qualifiers = {"source": identifier}
                         top_feature = SeqFeature(
@@ -43,5 +43,6 @@ class LocusFilter:
                                     qualifiers=sub_qualifiers)
                             )
                         record.features.append(top_feature)
+                        i += 1
 
             yield record
