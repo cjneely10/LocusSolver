@@ -2,7 +2,7 @@ from typing import List, Optional
 
 
 class Feature:
-    def __init__(self, start: int, end: int, strand: int, exon_list: Optional[List] = None):
+    def __init__(self, start: int, end: int, strand: int, _id: str, exon_list: Optional[List] = None):
         if exon_list is None:
             self._exons = []
         else:
@@ -10,6 +10,7 @@ class Feature:
         self._start = start
         self._end = end
         self._strand = strand
+        self._id = _id
 
     @property
     def start(self):
@@ -22,6 +23,10 @@ class Feature:
     @property
     def strand(self):
         return self._strand
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def exons(self):

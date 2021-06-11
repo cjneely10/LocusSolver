@@ -3,6 +3,7 @@ from typing import Sequence, Optional, Tuple, List, Dict
 
 from BCBio import GFF
 from Bio import SeqIO
+from Bio.SeqFeature import SeqFeature
 from Bio.SeqRecord import SeqRecord
 
 from src.util.feature import Feature
@@ -37,12 +38,13 @@ class Annotation(dict):
 
     def _to_features(self) -> List[Tuple[str, List[Tuple[str, Feature]]]]:
         out = []
+        gene_dict: List[SeqFeature]
         for record_id, gene_dict in self.items():
             _add = []
             for feature in gene_dict:
                 _add.append((self._identifier,
                              Feature(feature.location.start, feature.location.end, feature.strand,
-                                     feature.sub_features)))
+                                     feature.id, feature.sub_features)))
             out.append((record_id, _add))
         return out
 

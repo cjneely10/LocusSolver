@@ -19,12 +19,12 @@ class LocusFilter:
             record.features = []
             for j, super_locus in enumerate(sll, start=1):
                 result = fxn(super_locus)
-                for (identifier, selected_features) in result:
+                for l, (identifier, selected_features) in enumerate(result, start=1):
                     for k, selected_feature in enumerate(selected_features, start=1):
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"gene{i}.{j}.{k}-{identifier}-{contig_id}"
-                                  f"-start:{selected_feature.start + 1}-end:{selected_feature.end}",
+                            "ID": f"gene{i}.{j}.{l}.{k}-{identifier}-{contig_id}"
+                                  f"-{str(selected_feature.id)}",
                         }
                         sub_qualifiers = {"source": identifier}
                         top_feature = SeqFeature(
