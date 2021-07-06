@@ -13,16 +13,16 @@ class TestLocusFilter(unittest.TestCase):
         model1 = Annotation(
             Path("data/sample.fna"),
             Path("data/sample.gmes.gff3"),
-            "genemark"
+            "1"
         )
         model2 = Annotation(
             Path("data/sample.fna"),
             Path("data/sample.aug.gff3"),
-            "augustus"
+            "2"
         )
         locus_filter = LocusFilter(annotation_models=[model1, model2])
         with open("data/sample.merged.gff3", "w") as merged_file:
-            GFF.write(locus_filter.filter(Tier(1, {1: "genemark", 2: "augustus"})), merged_file)
+            GFF.write(locus_filter.filter(Tier(1, {1: "1", 2: "2"})), merged_file)
 
 
 if __name__ == '__main__':

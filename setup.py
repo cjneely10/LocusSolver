@@ -13,7 +13,7 @@ setup(
     install_requires=[
         "bcbio-gff==0.6.6",
         "biopython==1.76",
-        "plumbum==1.7.0"
+        "plumbum==1.6.6"
     ],
     scripts=[
         "src/locus_solver",

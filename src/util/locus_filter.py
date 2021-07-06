@@ -26,16 +26,18 @@ class LocusFilter:
                         identifier = selected_feature.qualifiers["source"]
                         qualifiers = {
                             "source": identifier,
-                            "ID": f"transcript{i}-{str(selected_feature.id)}"
+                            "ID": f"gene{i}-{str(selected_feature.id)}"
                         }
                         top_feature = SeqFeature(
                             FeatureLocation(selected_feature.location.start, selected_feature.location.end),
-                            type="transcript",
+                            type="gene",
                             strand=selected_feature.strand,
                             qualifiers=qualifiers
                         )
                         top_feature.sub_features = []
                         for sub_feature in selected_feature.sub_features:
+                            if sub_feature.type == "transcript":
+                                continue
                             sub_qualifiers = {
                                 "source": selected_feature.qualifiers["source"],
                             }

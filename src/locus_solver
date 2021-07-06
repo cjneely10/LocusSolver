@@ -46,20 +46,19 @@ class LocusSolver(cli.Application):
         """Set number of programs that must corroborate an input, default 1"""
         self.tier = tier
 
-    def main(self, *identifiers):
-        if len(identifiers) != len(self.gff3_files):
-            print("Pass identifiers for each gff3 file provided!")
-            exit(1)
+    def main(self):
         if len(self.gff3_files) < self.tier:
             print("Tier request surpasses input size, exiting")
             exit(1)
         annotation_models = []
-        for identifier, gff3_file in zip(identifiers, self.gff3_files):
+        identifiers = []
+        for identifier, gff3_file in enumerate(self.gff3_files):
+            identifiers.append(str(identifier))
             annotation_models.append(
                 Annotation(
                     self.genome_file,
                     gff3_file,
-                    identifier
+                    str(identifier)
                 )
             )
         locus_filter = LocusFilter(annotation_models=annotation_models)
