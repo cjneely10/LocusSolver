@@ -12,19 +12,8 @@ from src.util.locus_filter import LocusFilter
 
 class LocusSolver(cli.Application):
     """Merge GFF3 files into single annotation set"""
-    gff3_files: List[Path] = []
     output_path: Path = Path("/dev/stdout")
     tier: int = 1
-
-    @cli.switch(["-i", "--input-gff3"], str, mandatory=True, list=True)
-    def set_gff3_files(self, input_gff3s):
-        """Path to annotation GFF3 file. Provide in expected priority sort order"""
-        for file in input_gff3s:
-            file = Path(file).resolve()
-            if not file.exists() or not file.is_file():
-                print(f"Unable to find gff3 file {str(file)}")
-                exit(1)
-            self.gff3_files.append(file)
 
     @cli.switch(["-o", "--output"], str)
     def set_output_path(self, output_path):
@@ -36,13 +25,20 @@ class LocusSolver(cli.Application):
         """Set number of programs that must corroborate an input, default 1"""
         self.tier = tier
 
-    def main(self):
-        if len(self.gff3_files) < self.tier:
+    def main(self, *gff3_files):
+        if len(gff3_files) == 0:
+            self.help()
+            exit(0)
+        if len(gff3_files) < self.tier:
             print("Tier request surpasses input size, exiting")
             exit(1)
         annotation_models = []
         identifiers = []
-        for identifier, gff3_file in enumerate(self.gff3_files):
+        for identifier, gff3_file in enumerate(gff3_files):
+            gff3_file = Path(gff3_file).resolve()
+            if not gff3_file.exists() or not gff3_file.is_file():
+                print(f"Unable to find gff3 file {str(gff3_file)}")
+                exit(1)
             identifiers.append(str(identifier))
             annotation_models.append(Annotation(gff3_file, str(identifier)))
         locus_filter = LocusFilter(annotation_models=annotation_models)
