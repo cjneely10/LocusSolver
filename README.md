@@ -34,7 +34,7 @@ Provide GFF3 files in order of precedence (e.g. first GFF3 features have higher 
 
 Example:
 
-Ensure that your files are in GFF3 format using GFFread:
+Ensure that your files are in GFF3 format using [GFFread](https://github.com/gpertea/gffread):
 
 ```shell
 gffread "<file>" -G -o "<file>.gff3"
