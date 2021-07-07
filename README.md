@@ -33,6 +33,6 @@ Switches:
 Example:
 
 ```shell
-locus_solver -i data/sample.gmes.gff3 -i data/sample.aug.gff3 -o data/sample.merged.gff3
-locus_solver -t 2 -i data/sample.gmes.gff3 -i data/sample.aug.gff3 -o data/sample.merged.gff3
+locus_solver -i data/sample.gmes.gff3 -i data/sample.aug.gff3 -o data/sample.merged.test.gff3
+locus_solver -t 2 -i tests/data/sample.gmes.gff3 -i tests/data/sample.aug.gff3 -o tests/data/sample.merged.test.gff3
 ```
