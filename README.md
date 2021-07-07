@@ -34,6 +34,14 @@ Provide GFF3 files in order of precedence (e.g. first GFF3 features have higher 
 
 Example:
 
+Ensure that your files are in GFF3 format using GFFread:
+
+```shell
+gffread "<file>" -G -o "<file>.gff3"
+```
+
+Run `locus_solver` on GFF3 files:
+
 ```shell
 locus_solver data/sample.gmes.gff3 data/sample.aug.gff3 -o data/sample.merged.test.gff3
 locus_solver -t 2 data/sample.gmes.gff3 data/sample.aug.gff3 -o data/sample.merged.test.gff3
