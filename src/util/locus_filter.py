@@ -38,8 +38,6 @@ class LocusFilter:
                         )
                         top_feature.sub_features = []
                         for sub_feature in selected_feature.sub_features:
-                            if sub_feature.type == "transcript":
-                                continue
                             sub_qualifiers = {
                                 "source": selected_feature.qualifiers["source"],
                             }
