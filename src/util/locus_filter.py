@@ -1,5 +1,6 @@
 from typing import List, Dict, Callable, Generator
 
+from Bio.Seq import Seq
 from Bio.SeqFeature import SeqFeature, FeatureLocation
 from Bio.SeqRecord import SeqRecord
 
@@ -16,7 +17,8 @@ class LocusFilter:
     def filter(self, fxn: Callable[[SuperLocus], FilterResult]) -> Generator[SeqRecord, None, None]:
         i = 1
         for (contig_id, sll) in self._feature_slls.items():
-            record: SeqRecord = Annotation.genome_dict[contig_id]
+            record = SeqRecord(id=contig_id, name=contig_id, seq=Seq(""))
+            record.features = []
             for super_locus in sll:
                 result: FilterResult = fxn(super_locus)
                 selected_features: List[SeqFeature]

@@ -12,19 +12,9 @@ from src.util.locus_filter import LocusFilter
 
 class LocusSolver(cli.Application):
     """Merge GFF3 files into single annotation set"""
-    genome_file: Path
     gff3_files: List[Path] = []
     output_path: Path = Path("/dev/stdout")
     tier: int = 1
-
-    @cli.switch(["-g", "--genome"], str, mandatory=True)
-    def set_genome_path(self, genome_path):
-        """Path to genome FASTA file"""
-        genome_path = Path(genome_path).resolve()
-        if not genome_path.exists() or not genome_path.is_file():
-            print("Unable to find genome file")
-            exit(1)
-        self.genome_file = genome_path
 
     @cli.switch(["-i", "--input-gff3"], str, mandatory=True, list=True)
     def set_gff3_files(self, input_gff3s):
@@ -54,13 +44,7 @@ class LocusSolver(cli.Application):
         identifiers = []
         for identifier, gff3_file in enumerate(self.gff3_files):
             identifiers.append(str(identifier))
-            annotation_models.append(
-                Annotation(
-                    self.genome_file,
-                    gff3_file,
-                    str(identifier)
-                )
-            )
+            annotation_models.append(Annotation(gff3_file, str(identifier)))
         locus_filter = LocusFilter(annotation_models=annotation_models)
         with open(self.output_path, "w") as merged_file:
             GFF.write(

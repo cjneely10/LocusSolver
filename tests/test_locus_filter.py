@@ -11,12 +11,10 @@ from src.util.annotation import Annotation
 class TestLocusFilter(unittest.TestCase):
     def test_load(self):
         model1 = Annotation(
-            Path("data/sample.fna"),
             Path("data/sample.gmes.gff3"),
             "1"
         )
         model2 = Annotation(
-            Path("data/sample.fna"),
             Path("data/sample.aug.gff3"),
             "2"
         )

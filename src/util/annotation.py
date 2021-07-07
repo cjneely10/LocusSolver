@@ -11,10 +11,7 @@ from src.util.superlocus_list import SuperLocusList
 
 
 class Annotation(dict):
-    genome_dict: dict = None
-
     def __init__(self,
-                 genome_file: Path,
                  gff3_file: Path,
                  identifier: str,
                  features: Optional[Sequence[str]] = None,
@@ -25,8 +22,6 @@ class Annotation(dict):
         self._gff_file = gff3_file
         self._features = features
         self._identifier = identifier
-        if Annotation.genome_dict is None:
-            Annotation.load_genome(genome_file)
         self._load()
 
     @staticmethod
@@ -61,9 +56,6 @@ class Annotation(dict):
     def _load(self):
         gff3_ptr = open(self._gff_file, "r")
         record: SeqRecord
-        for record in GFF.parse(gff3_ptr,
-                                base_dict=Annotation.genome_dict,
-                                # limit_info=dict(gff_type=self._features)
-                                ):
-            self[record.name] = record.features
+        for record in GFF.parse(gff3_ptr):
+            self[record.id] = record.features
         gff3_ptr.close()
