@@ -10,6 +10,7 @@ from src.util.locus_filter import LocusFilter
 
 
 class LocusSolver(cli.Application):
+    VERSION = "0.1.0"
     """Merge GFF3 files into single annotation set"""
     output_path: Path = Path("/dev/stdout")
     tier: int = 1

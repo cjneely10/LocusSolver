@@ -7,7 +7,7 @@ Accessory script for merging features from GFF3 files. This script is included a
 `LocusSolver` expects Python3.8.
 
 ```shell
-pip install git+https://github.com/cjneely10/LocusSolver.git
+pip install git+https://github.com/cjneely10/LocusSolver.git@v0.1.0
 ```
 
 ## Usage
